@@ -1,10 +1,9 @@
 # Write your MySQL query statement below
 
-#show unique id of each users, if unique id not there show null
+SELECT 
+    eu.unique_id,
+    e.name
+FROM Employees e
+LEFT JOIN EmployeeUNI eu ON e.id = eu.id
 
-
-select ei.unique_id, e.name
-from employees e
-left join employeeuni ei
-on ei.id = e.id
     
