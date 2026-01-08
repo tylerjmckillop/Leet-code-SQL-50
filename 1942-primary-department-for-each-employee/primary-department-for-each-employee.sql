@@ -1,20 +1,24 @@
 
-        
-    # Write your MySQL query statement below
-WITH count AS
+  #Employees can be multiple departments
+  #N = one department / primary department
+  #Find employees and their primary department      
+  #One row is an employee and their primary department
+  #One row in input is an employee and the department they are apart of, whether it is their primary or not
 
-        (SELECT
-            employee_id
-            ,COUNT(*) as dept_count
-        FROM Employee
-        GROUP BY employee_id
-        )
+#Only one department
 
 SELECT 
-    e.employee_id
-    ,e.department_id
-FROM Employee e
-JOIN count p
-ON e.employee_id = p.employee_id
-WHERE p.dept_count = 1
-   OR e.primary_flag = 'Y'
+    employee_id,
+    department_id
+FROM Employee
+GROUP BY employee_id
+HAVING COUNT(department_id) = 1
+
+
+UNION
+
+SELECT
+    employee_Id,
+    department_id
+FROM Employee
+WHERE primary_flag = 'Y'
