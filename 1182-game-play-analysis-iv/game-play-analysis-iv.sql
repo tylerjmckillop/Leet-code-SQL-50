@@ -22,3 +22,5 @@ SELECT
             a.event_date = b.dayafter
             )/COUNT(DISTINCT player_id),2) as fraction
 FROM Activity 
+
+
