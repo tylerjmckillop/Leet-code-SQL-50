@@ -1,11 +1,18 @@
 # Write your MySQL query statement below
-WITH productnum AS (
-  SELECT COUNT(product_key) AS total_products
-  FROM Product
-)
-SELECT c.customer_id
-FROM Customer c
-CROSS JOIN productnum p
-GROUP BY c.customer_id, p.total_products
-HAVING COUNT(DISTINCT c.product_key) = p.total_products;
+
+-- To do this, we count how many distinct products each customer bought and compare it with the total number of products in the Product table.
+
+-- If both numbers are equal, it means the customer purchased every product.
+#isolate the customers who have both the product key join onto them?
+
+SELECT
+    customer_id
+FROM Customer
+GROUP BY customer_id
+HAVING IF(
+
+        COUNT(DISTINCT product_key) = (SELECT COUNT(DISTINCT product_key) FROM Product), customer_id, NULL
+
+        )
+
 
