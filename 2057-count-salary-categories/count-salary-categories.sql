@@ -1,21 +1,34 @@
-WITH category_counter AS (
-  SELECT account_id,
-         CASE
-           WHEN income < 20000 THEN 'Low Salary'
-           WHEN income <= 50000 THEN 'Average Salary'
-           ELSE 'High Salary'
-         END AS category
-  FROM Accounts
-),
-categories AS (
-  SELECT 'Average Salary' AS category
-  UNION ALL SELECT 'Low Salary'
-  UNION ALL SELECT 'High Salary'
-)
-SELECT
-  cc.category,
-  COUNT(c.account_id) AS accounts_count
-FROM categories cc
-LEFT JOIN category_counter c
-  ON cc.category = c.category
-GROUP BY cc.category;
+
+WITH cte AS 
+
+    (
+
+        SELECT
+            account_id,
+            income,
+            CASE 
+                WHEN income < 20000 THEN "Low Salary"
+                WHEN income >= 20000 and income <= 50000 THEN "Average Salary"
+                WHEN income > 50000 THEN "High Salary"
+            END as category
+        FROM Accounts
+
+    )
+
+, cte2 AS 
+    (
+        SELECT
+            'Low Salary' AS category
+        UNION ALL
+        SELECT 'Average Salary' as category
+        UNION ALL
+        select 'High Salary' as category
+    )
+
+SELECT 
+    cte2.category,
+    Coalesce(count(cte.category), 0) as accounts_count
+FROM cte2
+LEFT JOIN cte
+ON cte.category = cte2.category
+GROUP BY category
