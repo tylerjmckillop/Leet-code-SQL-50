@@ -1,35 +1,31 @@
 # Write your MySQL query statement below
 
-WITH newprod AS
+#If change date before 2019-08-18 THEN new_price = 10 
 
-            (SELECT 
-                product_id,
-                new_price,
-                change_date
-            FROM Products
-            WHERE 
-                change_date <= "2019-08-16"
-            )
-, max_change AS
-(SELECT
-    product_id,
-    MAX(change_date) as max_change_date
-FROM newprod
-GROUP BY product_id
-)
+WITH cte AS
 
-,t3 as (
-SELECT DISTINCT
-    p.product_id
-FROM Products p
-)
+    (
+        SELECT 
+            product_id,
+            MAX(change_date) as max_date
+        FROM Products
+        WHERE change_date <= '2019-08-16'
+        GROUP BY product_id
+    ),
+
+cte2 as 
+    (
+        SELECT distinct product_id
+        From products
+    )
 
 SELECT 
-    t3.product_id,
-    CASE WHEN np.new_price IS Null THEN 10 ELSE np.new_price END as price
-FROM newprod np
-JOIN max_change m
-ON m.max_change_date = np.change_date AND m.product_id = np.product_id
-RIGHT JOIN t3 
-ON t3.product_id = np.product_id
-
+    cte2.product_id,
+    COALESCE(p.new_price, 10) as price
+FROM cte2
+LEFT JOIN cte
+ON cte.product_id = cte2.product_id
+LEFT JOIN Products p 
+ON p.product_id = cte.product_id
+AND
+p.change_date = cte.max_date
