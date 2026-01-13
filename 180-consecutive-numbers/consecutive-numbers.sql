@@ -1,13 +1,25 @@
 # Write your MySQL query statement below
 
-
-#SELECT 
-#    num if num = num -1 and num = num -2 as ConsecutiveNums
-#FROM Logs
-
+-- WITH cte AS
+--     (
+--         SELECT 
+--             id,
+--             num,
+--             ROW_NUMBER() OVER( PARTITION BY num ORDER BY id asc) as rn
+--         FROM Logs
+--     )
+-- SELECT *
+-- FROM cte
+WITH cte AS (
+  SELECT
+    id,
+    num,
+    ROW_NUMBER() OVER (ORDER BY id)
+    - ROW_NUMBER() OVER (PARTITION BY num ORDER BY id) AS g
+  FROM Logs
+)
 SELECT DISTINCT
-    l1.num as ConsecutiveNums
-FROM logs AS l1
-JOIN logs as l2 ON l2.id = l1.id +1 
-JOIN logs as l3 ON l3.id = l2.id +1
-WHERE l1.num = l2.num and l2.num = l3.num
+  num AS ConsecutiveNums
+FROM cte
+GROUP BY num, g
+HAVING COUNT(*) >= 3
